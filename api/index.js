@@ -1,14 +1,11 @@
 const express = require("express");
 const app = express();
 
-app.get("/", (req, res) => res.send("Express on Vercel"));
+const mockResponse = require('../apiResponse');
 
-app.get("/hello", (req, res) => res.send("Hello!"));
+app.get("/status", (req, res) => res.send("API is online"));
 
-app.post("/webhook", (req, res) => res.status(200).json({
-    status: 200,
-    success: true
-}));
+app.post("/cargo-routes", (req, res) => res.status(200).json(mockResponse));
 
 app.listen(3000, () => console.log("Server ready on port 3000."));
 
