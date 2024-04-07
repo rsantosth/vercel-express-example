@@ -16,7 +16,8 @@ const baseResponse = {
 
 class ResponseBuilder {
     constructor() {
-        this.response = baseResponse;
+        this.response = {...baseResponse};
+        this.response.responses[1].texts = [];
     }
 
     addTextResponse(text) {
