@@ -4,7 +4,6 @@ const app = express();
 
 const axiosInstance = require('./axiosInstance');
 
-const mockResponse = require('../apiResponse');
 const constants = require('../constants');
 const locationService = require('../services/locations');
 const ResponseBuilder = require('../responseBuilder');
@@ -38,7 +37,13 @@ app.post("/cargo-routes", async (req, res) => {
                 const builder = new ResponseBuilder();
                 data.oceanProducts.forEach(product => {
                     product.transportSchedules.forEach((schedule) => {
-                        builder.addTextResponse(`Navio ${schedule.firstDepartureVessel.vesselName} (${schedule.firstDepartureVessel.vesselIMONumber}) - Partida: ${moment(schedule.departureDateTime).format("DD/MM/yyyy HH:mm")} / Chegada: ${moment(schedule.arrivalDateTime).format("DD/MM/yyyy HH:mm")}`);
+                        let textResponse = '';
+                        textResponse += `Navio ${schedule.firstDepartureVessel.vesselName} (${schedule.firstDepartureVessel.vesselIMONumber}) - `;
+                        textResponse += `Partida: ${moment(schedule.departureDateTime).format("DD/MM/yyyy HH:mm")} / `;
+                        textResponse += `Chegada: ${moment(schedule.arrivalDateTime).format("DD/MM/yyyy HH:mm")} / `;
+                        textResponse += `Tempo em trânsito aproximado: ${Math.round(schedule.transitTime / 1440)} dias.`;
+
+                        builder.addTextResponse(textResponse);
                     });
                 });
 
@@ -48,12 +53,13 @@ app.post("/cargo-routes", async (req, res) => {
 
         res.status(204);
     } catch (err) {
-        if (err.response.data.message === 'Data not found') {
+        console.error("ERROR: ", err);
+
+        if (err.response && err.response.data.message === 'Data not found') {
             res.status(204).send("Não há horários disponíveis para a combinação pesquisada.");
             return;
         }
 
-        console.error("ERROR: ", err.response);
         res.status(500).send("Ocorreu um erro insperado!");
     }
 });

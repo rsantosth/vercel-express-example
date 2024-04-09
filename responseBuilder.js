@@ -1,31 +1,36 @@
-const baseResponse = {
-    responses: [
-      {
-        "type": "text",
-        "texts": ["Foram encontrados os seguintes resultados para a busca informada:"]
-      },
-      {
-        "type": "text",
-        "texts": []
-      },      
-    ],
-    output: {
-      "total_expenses": 100
-    }
+const baseTextResponse = {
+  "type": "text",
+  "texts": ["Foram encontrados os seguintes resultados para a busca informada:"]
 }
 
 class ResponseBuilder {
     constructor() {
-        this.response = {...baseResponse};
-        this.response.responses[1].texts = [];
+      this.response = {};
+      this.textResponses = [];
     }
 
     addTextResponse(text) {
-        this.response.responses[1].texts.push(text);
+      this.textResponses.push({
+          "type": "text",
+          "texts": [text]
+        });
+    }
+
+    getResponsesLength() {
+      return this.textResponses.length;
     }
 
     getResponse() {
-        return this.response;
+      this.response = {
+        responses: [],
+        output: {
+          "total_vessels": this.getResponsesLength(),
+        }
+      };
+
+      this.response.responses = [baseTextResponse, ...this.textResponses.slice(0, 4)];
+
+      return this.response;
     }
 }
 
